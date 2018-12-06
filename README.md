@@ -1,4 +1,4 @@
-##  依赖Mqtt-release-V1.0.aar
+##  依赖Mqtt-release-V1.1.aar
 将Mqtt-release-V1.0.aar放到libs目录
 ``` gradle
 repositories {
