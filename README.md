@@ -7,7 +7,7 @@ repositories {
 ```
 ``` gradle
 dependencies {
-    implementation(name: 'Mqtt-release-V1.0', ext: 'aar')
+    implementation(name: 'Mqtt-release-V1.1', ext: 'aar')
 }
 ```
 
