@@ -1,0 +1,73 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 2
+        versionName "1.1"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        resourcePrefix 'mqtt_'
+        consumerProguardFiles 'proguard-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    libraryVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "Mqtt-${variant.buildType.name}-V${defaultConfig.versionName}.aar"
+        }
+    }
+
+}
+
+repositories {
+    maven {
+        url "https://repo.eclipse.org/content/repositories/paho-snapshots/"
+    }
+}
+
+configurations {
+    myConfig
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
+    implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+    myConfig 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
+    myConfig 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+}
+
+project.afterEvaluate {
+    def isAndroidLibraryProject = project.plugins.hasPlugin('com.android.library')
+    if(isAndroidLibraryProject) {
+        def releaseJavacTask = tasks.findByName('compileReleaseJavaWithJavac')
+        releaseJavacTask.doLast {
+            copy {
+                from {
+                    configurations.myConfig.collect {
+                        it.isDirectory() ? it : zipTree(it)
+                    }
+                }
+                into releaseJavacTask.outputs.files.last().path
+            }
+        }
+    }
+}
