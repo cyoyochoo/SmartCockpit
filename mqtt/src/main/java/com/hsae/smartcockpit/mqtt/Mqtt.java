@@ -176,6 +176,14 @@ public class Mqtt {
         }
     }
 
+    public void unsubscribe(String[] topic) {
+        try {
+            client.unsubscribe(topic);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
     private MqttCallback mqttCallback = new MqttCallbackExtended() {
         @Override
         public void connectComplete(boolean reconnect, String serverURI) {
