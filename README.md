@@ -71,17 +71,21 @@ mqtt.connect(new MqttListener() {
 //Mqtt.QosType.best     保证收到且只能收到一条消息
 mqtt.subscribe(new String[]{"aa/aa", "bb/bb"}, new int[]{Mqtt.QosType.best, Mqtt.QosType.normal});
 ```
-4. **发布消息**
+4. **取消订阅**
+``` java
+mqtt.unsubscribe(String[] topic);
+```
+5. **发布消息**
 ``` java
 //分别是主题、消息内容、策略、server是否保留该消息
 mqtt.publish(String topic, String msg, @Mqtt.QosType int qos, boolean retained);
 ```
-5. **关闭连接**
+6. **关闭连接**
 ``` java
 mqtt.close();
 ```
-6. **判断连接状态**
+7. **判断连接状态**
 ``` java
 mqtt.isConnected();
 ```
-7. **To be continued...**
+8. **To be continued...**
