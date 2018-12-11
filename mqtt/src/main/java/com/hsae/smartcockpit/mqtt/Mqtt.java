@@ -170,8 +170,19 @@ public class Mqtt {
 
     public void subscribe(String[] topic, @QosType int[] qos) {
         try {
-            client.subscribe(topic, qos);
+            client.subscribe(topic, qos, null, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    mqttListener.subscribeSuccess(asyncActionToken);
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    mqttListener.subscribeFailure(asyncActionToken, exception);
+                }
+            });
         } catch (MqttException e) {
+            mqttListener.subscribeFailure(new SubscribeActionToken(topic), e);
             e.printStackTrace();
         }
     }

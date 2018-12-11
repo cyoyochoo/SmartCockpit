@@ -11,4 +11,6 @@ public interface MqttListener {
     void deliveryComplete(IMqttDeliveryToken token);
     void onSuccess(IMqttToken asyncActionToken);
     void onFailure(IMqttToken asyncActionToken, Throwable exception);
+    void subscribeSuccess(IMqttToken asyncActionToken);
+    void subscribeFailure(IMqttToken asyncActionToken, Throwable exception);
 }
