@@ -126,9 +126,9 @@ public class Mqtt {
         mqttListener = null;
     }
 
-    public void disconnect() {
+    public void disconnect(long quiesceTimeout) {
         try {
-            client.disconnect(0);
+            client.disconnect(quiesceTimeout);
         } catch (Exception e) {
             e.printStackTrace();
         }
