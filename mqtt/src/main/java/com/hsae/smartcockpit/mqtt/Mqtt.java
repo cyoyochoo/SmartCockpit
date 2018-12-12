@@ -1,8 +1,6 @@
 package com.hsae.smartcockpit.mqtt;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Process;
@@ -47,15 +45,6 @@ public class Mqtt {
     private MqttConnectOptions options;
     private MqttListener mqttListener;
     private Handler handler;
-    /*private boolean innerConnectExecuted;
-    private BroadcastReceiver innerReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (innerConnectExecuted && !isConnected() && isNetworkAvailable()) {
-                innerConnect();
-            }
-        }
-    };*/
 
     private Mqtt(Builder builder) {
         this.context = builder.context;
@@ -100,16 +89,6 @@ public class Mqtt {
                 }
             });
         }
-//        context.registerReceiver(innerReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (cm != null) {
-            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-            return networkInfo != null && networkInfo.isAvailable();
-        }
-        return false;
     }
 
     public void connect(@NonNull MqttListener mqttListener) {
@@ -136,7 +115,6 @@ public class Mqtt {
                 e.printStackTrace();
             }
         }
-//        innerConnectExecuted = true;
     }
 
     public void close() {
@@ -145,13 +123,13 @@ public class Mqtt {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        context.unregisterReceiver(innerReceiver);
+        mqttListener = null;
     }
 
     public void disconnect() {
         try {
-            client.disconnect();
-        } catch (MqttException e) {
+            client.disconnect(0);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -173,16 +151,16 @@ public class Mqtt {
             client.subscribe(topic, qos, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    mqttListener.subscribeSuccess(asyncActionToken);
+                    if (mqttListener != null) mqttListener.subscribeSuccess(asyncActionToken);
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    mqttListener.subscribeFailure(asyncActionToken, exception);
+                    if (mqttListener != null) mqttListener.subscribeFailure(asyncActionToken, exception);
                 }
             });
         } catch (MqttException e) {
-            mqttListener.subscribeFailure(new SubscribeActionToken(topic), e);
+            if (mqttListener != null) mqttListener.subscribeFailure(new SubscribeActionToken(topic), e);
             e.printStackTrace();
         }
     }
@@ -198,34 +176,34 @@ public class Mqtt {
     private MqttCallback mqttCallback = new MqttCallbackExtended() {
         @Override
         public void connectComplete(boolean reconnect, String serverURI) {
-            mqttListener.connectComplete(reconnect, serverURI);
+            if (mqttListener != null) mqttListener.connectComplete(reconnect, serverURI);
         }
 
         @Override
         public void connectionLost(Throwable cause) {
-            mqttListener.connectionLost(cause);
+            if (mqttListener != null) mqttListener.connectionLost(cause);
         }
 
         @Override
         public void messageArrived(String topic, MqttMessage message) throws Exception {
-            mqttListener.messageArrived(topic, message);
+            if (mqttListener != null) mqttListener.messageArrived(topic, message);
         }
 
         @Override
         public void deliveryComplete(IMqttDeliveryToken token) {
-            mqttListener.deliveryComplete(token);
+            if (mqttListener != null) mqttListener.deliveryComplete(token);
         }
     };
 
     private IMqttActionListener mqttActionListener = new IMqttActionListener() {
         @Override
         public void onSuccess(IMqttToken asyncActionToken) {
-            mqttListener.onSuccess(asyncActionToken);
+            if (mqttListener != null) mqttListener.onSuccess(asyncActionToken);
         }
 
         @Override
         public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-            mqttListener.onFailure(asyncActionToken, exception);
+            if (mqttListener != null) mqttListener.onFailure(asyncActionToken, exception);
         }
     };
 
@@ -243,9 +221,9 @@ public class Mqtt {
         private String userName;
         private String password = "";
         private String clientId;
-        private int timeOut = 30;
-        private int keepAliveInterval = 60;
-        private boolean cleanSession;
+        private int timeOut = 15;
+        private int keepAliveInterval = 30;
+        private boolean cleanSession = true;
         private boolean autoReconnect = true;
         private InputStream caInputStream;
         private InputStream clientInputStream;
