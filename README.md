@@ -1,5 +1,5 @@
-##  依赖Mqtt-release-V1.2.aar
-将Mqtt-release-V1.2.aar放到libs目录
+##  依赖Mqtt-release-V1.3.aar
+将Mqtt-release-V1.3.aar放到libs目录
 ``` gradle
 repositories {
     flatDir {dirs 'libs'}
@@ -7,7 +7,7 @@ repositories {
 ```
 ``` gradle
 dependencies {
-    implementation(name: 'Mqtt-release-V1.2', ext: 'aar')
+    implementation(name: 'Mqtt-release-V1.3', ext: 'aar')
 }
 ```
 
@@ -59,6 +59,16 @@ mqtt.connect(new MqttListener() {
             @Override
             public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
                 Log.i("", "推送连接失败");
+            }
+            
+            @Override
+            public void subscribeSuccess(IMqttToken iMqttToken) {
+                Log.i("", iMqttToken.getTopics()[0] + "订阅成功");
+            }
+
+            @Override
+            public void subscribeFailure(IMqttToken iMqttToken, Throwable throwable) {
+                Log.i("", iMqttToken.getTopics()[0] + "订阅失败");
             }
         });
 ```
