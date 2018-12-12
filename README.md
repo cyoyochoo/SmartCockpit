@@ -1,5 +1,5 @@
-##  依赖Mqtt-release-V1.3.aar
-将Mqtt-release-V1.3.aar放到libs目录
+##  依赖Mqtt-release-V1.7.aar
+将Mqtt-release-V1.7.aar放到libs目录
 ``` gradle
 repositories {
     flatDir {dirs 'libs'}
@@ -7,7 +7,7 @@ repositories {
 ```
 ``` gradle
 dependencies {
-    implementation(name: 'Mqtt-release-V1.3', ext: 'aar')
+    implementation(name: 'Mqtt-release-V1.7', ext: 'aar')
 }
 ```
 
